@@ -1,25 +1,61 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
 
-function App() {
+export default function App() {
+  const [name, setName] = useState("");
+  const [names, setNames] = useState();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const getName = async () => {
+      const response = await fetch(`https://api.agify.io/?name=${name}`);
+      const data = await response.json();
+      setNames(data);
+    };
+
+    getName();
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <section>
+        <h1>
+          Predict the Age of a name using the{" "}
+          <a href="https://agify.io">Agify API</a>
+        </h1>
+
+        <form onSubmit={handleSubmit}>
+          <article>
+            <label htmlFor="name">Search for a name</label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              placeholder="Search for a name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+            />
+          </article>
+          <button onClick={handleSubmit} type="submit">
+            Search
+          </button>
+        </form>
+
+        {names ? (
+          <div>
+            <ul>
+              <li>You searched for {names.name}</li>
+              <li>They are likely {names.age} years old</li>
+              <li>
+                The name {names.name} has been searched for{" "}
+                {names.count.toLocaleString()} times
+              </li>
+            </ul>
+          </div>
+        ) : (
+          <label htmlFor="name">Search for a name</label>
+        )}
+      </section>
+    </>
   );
 }
-
-export default App;
